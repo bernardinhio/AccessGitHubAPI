@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/label_enter_github"
+            android:text="Enter GitHub profile URL"
+            android:fontFamily="sans-serif-condensed"
+            android:textColor="#000000"
+            android:background="#fbf292"
+            android:layout_marginTop="10sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:paddingTop="15sp"
+            app:layout_constraintTop_toTopOf="parent"/>
+        <EditText
+            android:id="@+id/input_url"
+            android:textSize="15sp"
+            android:fontFamily="sans-serif-condensed"
+            android:lines="3"
+            android:textColor="#0118e6"
+            android:background="#fbf292"
+            android:padding="10sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/label_enter_github"/>
+        <Button
+            android:id="@+id/show_account_repositories"
+            android:text="Show account repositories"
+            android:onClick="showAccountRepositories"
+            android:fontFamily="sans-serif-condensed"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:layout_margin="10sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/input_url"/>
+
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>

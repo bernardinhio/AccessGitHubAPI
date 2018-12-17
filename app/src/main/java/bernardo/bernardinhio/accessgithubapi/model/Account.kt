@@ -4,6 +4,7 @@ class Account(
         val id : Long = 0,
         val username : String = "",
         val email : String = "",
+        val createdAt : String = "",
         val htmlUrl : String = "",  // ends with username
         val apiUrl : String = "",   // ends with username
         val avatarUrl : String = "",

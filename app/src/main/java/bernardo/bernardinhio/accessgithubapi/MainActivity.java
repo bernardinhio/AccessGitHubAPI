@@ -35,32 +35,36 @@ import okhttp3.ResponseBody;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText etInputAccountUrl;
-    static ProgressBar progressBar;
-    static CircleImageView circleImageView;
-    static TextView tvUsername, tvCreatedAt;
-    static ConstraintLayout containerAccountInfo;
-    static Button btnShowAccountRepositories;
+    private EditText etInputAccountUrl;
+    private ProgressBar progressBar;
+    private CircleImageView circleImageView;
+    private TextView tvUsername, tvCreatedAt;
+    private ConstraintLayout containerAccountInfo;
+    private Button btnShowAccountRepositories;
+
+    private String userId;
+    private String username;
+    private String createdAt;
+    private String htmlUrl;
+    private String apiUrl;
+    private String avatarUrl;
+    private String repositoriesApiUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // close keyboard on start
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         etInputAccountUrl = findViewById(R.id.input_account_url);
-        progressBar = findViewById(R.id.progress_bar);
+        progressBar = findViewById(R.id.progress_bar_account_page);
         circleImageView = this.findViewById(R.id.avatar);
         tvUsername = findViewById(R.id.tv_username);
         tvCreatedAt = findViewById(R.id.created_at);
         containerAccountInfo = findViewById(R.id.container_account_info);
         btnShowAccountRepositories = findViewById(R.id.show_account_repositories);
     }
-
-
-
 
     public void showAccountInfo(View view) {
         String accountHtmlUrl = String.valueOf(etInputAccountUrl.getText());
@@ -74,21 +78,6 @@ public class MainActivity extends AppCompatActivity {
         } else Toast.makeText(this, "Empty url", Toast.LENGTH_SHORT).show();
     }
 
-
-
-
-
-    /**
-     * the html account url should be for ex:
-     * html url https://github.com/bernardinhio
-     * or any child such as html url https://github.com/bernardinhio?tab=repositories
-     *
-     * The call to API for account should be for ex:
-     * https://api.github.com/users/bernardinhio
-     * or any child such as:
-     * https://api.github.com/users/bernardinhio?tab=repositories
-     * which will always succeed the call to the account  unless the username doesn't exist then we don't get in the response a "login" : "bernardinhio" but a "message": "Not Found"
-     */
     private String generateAccountApiUrlFromAccountJtmlUrl(String accountHtmlUrl){
         if (accountHtmlUrl.matches("^(http|https)://.*$")){
             String[] parts = accountHtmlUrl.split("https://github.com/");
@@ -104,9 +93,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
-    private static class AsyncTaskAccountProfile extends AsyncTask<String, Void, String>{
+    private class AsyncTaskAccountProfile extends AsyncTask<String, Void, String>{
 
         String accountApiUrl = "";
         // constructor
@@ -117,8 +104,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            // start showing progress bar
-            progressBar.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);  // start showing progress bar
             containerAccountInfo.setVisibility(View.GONE);
             btnShowAccountRepositories.setEnabled(false);
         }
@@ -152,15 +138,17 @@ public class MainActivity extends AppCompatActivity {
             Log.d("AT_profile_info", stringResponseBody);
 
             try {
-
                 JSONObject jsonObject1 = new JSONObject(stringResponseBody);
 
-                String avatarUrl = jsonObject1.getString("avatar_url"); // ex: https://avatars2.githubusercontent.com/u/20923486?v=4
-                String repositoriesApiUrl = jsonObject1.getString("repos_url");
-                String username = jsonObject1.getString("login");
-                String createdAt = jsonObject1.getString("created_at").substring(0,10);
+                userId = String.valueOf(jsonObject1.getLong("id"));
+                username = jsonObject1.getString("login");
+                createdAt = jsonObject1.getString("created_at");
+                htmlUrl = jsonObject1.getString("html_url");
+                apiUrl = jsonObject1.getString("url");
+                avatarUrl = jsonObject1.getString("avatar_url");
+                repositoriesApiUrl = jsonObject1.getString("repos_url");
 
-                callAvatarApiUrl(avatarUrl, repositoriesApiUrl, username, createdAt);
+                callAvatarApiUrl(avatarUrl);
 
             } catch (JSONException exception){
                 Log.d("JSONException", exception.getMessage());
@@ -169,10 +157,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
-
-    private static void callAvatarApiUrl(String avatarUrl, final String repositoriesApiUrl, final String username, final String createdAt) {
+    private void callAvatarApiUrl(final String avatarUrl) {
         OkHttpClient okHttpClient = new OkHttpClient();
         Request.Builder requestBuilder = new Request.Builder();
         requestBuilder.url(avatarUrl);
@@ -188,25 +173,15 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-
                 ResponseBody responseBody = response.body();
                 InputStream inputStream = responseBody.byteStream();
                 final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+
                 Handler handler = new Handler(Looper.getMainLooper());
                 Runnable runnable = new Runnable() {
-
                     @Override
                     public void run() {
-                        // modify the UI when the image is created
-                        circleImageView.setImageBitmap(bitmap);
-                        tvUsername.setText(username);
-                        tvCreatedAt.setText(createdAt);
-                        containerAccountInfo.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.GONE);
-                        btnShowAccountRepositories.setEnabled(true);
-
-                        // set on button repositories click listener
-                        setShowRepositoriesOnClickListener(repositoriesApiUrl);
+                        updateAccountPageUi(bitmap);
                     }
                 };
                 handler.post(runnable);
@@ -214,27 +189,39 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void updateAccountPageUi(Bitmap bitmap){
+        // modify the UI when the image is created
+        circleImageView.setImageBitmap(bitmap);
+        tvUsername.setText(username);
+        tvCreatedAt.setText("Created: " + createdAt.substring(0,10));
+        containerAccountInfo.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
+        btnShowAccountRepositories.setEnabled(true);
+        // set on button repositories click listener
+        setShowRepositoriesOnClickListener(repositoriesApiUrl);
+    }
 
-
-
-    private static void setShowRepositoriesOnClickListener(final String repositoriesApiUrl){
+    private void setShowRepositoriesOnClickListener(final String repositoriesApiUrl){
         btnShowAccountRepositories.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                startShowRepositoriesActivity(btnShowAccountRepositories, repositoriesApiUrl);
+                startShowRepositoriesActivity();
             }
         });
     }
 
-    private static void startShowRepositoriesActivity(Button btnShowAccountRepositories, String repositoriesApiUrl){
+    private void startShowRepositoriesActivity(){
 
         Intent intent = new Intent(btnShowAccountRepositories.getContext(), RepositoriesActivity.class);
-
+        intent.putExtra("userId", userId);
+        intent.putExtra("username", username);
+        intent.putExtra("createdAt", createdAt);
+        intent.putExtra("htmlUrl", htmlUrl);
+        intent.putExtra("apiUrl", apiUrl);
+        intent.putExtra("avatarUrl", avatarUrl);
         intent.putExtra("repositoriesApiUrl", repositoriesApiUrl);
 
-        ((MainActivity) btnShowAccountRepositories.getContext()).startActivities(new Intent[]{intent});
+        this.startActivities(new Intent[]{intent});
     }
-
 
 }

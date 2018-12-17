@@ -1,14 +1,15 @@
 package bernardo.bernardinhio.accessgithubapi.model
 
 class Account(
-        val id : Long = 0,
+        val id : String = "",
         val username : String = "",
-        val email : String = "",
         val createdAt : String = "",
-        val htmlUrl : String = "",  // ends with username
-        val apiUrl : String = "",   // ends with username
+        val htmlUrl : String = "",
+        val apiUrl : String = "",
         val avatarUrl : String = "",
-        val repositories : ArrayList<Repository> = ArrayList<Repository>()
+        val repositoriesApiUrl : String = "",
+        val email : String = "", // to be completed once the call to repositories API occures
+        val repositories : ArrayList<Repository> = ArrayList<Repository>() // to be completed once the call to repositories API occures
 ){
 
 }

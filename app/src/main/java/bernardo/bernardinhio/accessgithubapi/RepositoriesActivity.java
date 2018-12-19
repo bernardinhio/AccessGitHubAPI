@@ -16,7 +16,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import bernardo.bernardinhio.accessgithubapi.model.Account;
 import bernardo.bernardinhio.accessgithubapi.model.Commit;
@@ -89,13 +92,6 @@ public class RepositoriesActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // show progress bar
-            //progressBar.setVisibility(View.VISIBLE);
-        }
-
-        @Override
         protected String doInBackground(String... strings) {
 
             OkHttpClient okHttpClient = new OkHttpClient();
@@ -127,9 +123,7 @@ public class RepositoriesActivity extends AppCompatActivity {
             try {
 
                 JSONArray jsonArray = new JSONArray(stringResponseBody);
-
                 JSONObject jsonObject;
-
                 String repositoryId;
                 String repositoryName;
                 String repositoryCreatedAt;
@@ -171,8 +165,9 @@ public class RepositoriesActivity extends AppCompatActivity {
                     repositoryUpdatedAt = jsonObject.getString("updated_at");
                     repositoryHtmlUrl = jsonObject.getString("html_url");
                     repositoryApiUrl = jsonObject.getString("url");
-                    // ex: https://api.github.com/repos/bernardinhio/ScorePinsGame/commits
                     commitsApiUrl = "https://api.github.com/repos/" + username + "/" + repositoryName + "/commits";
+                    // https://api.github.com/repos/bernardinhio/ScorePinsGame/commits
+                    //commitsApiUrl = jsonObject.getString("commits_url");
                     repositoryProgrammingLanguage = jsonObject.getString("language");
 
                     newRepository = new Repository(
@@ -209,96 +204,139 @@ public class RepositoriesActivity extends AppCompatActivity {
     private void setLastCommit(final int currentPosition, final String commitsApiUrl, final Repository repository) {
         if (commitsApiUrl != null && !commitsApiUrl.isEmpty()){
 
-            findLastCommentAndUpdateAccountAndRepository(currentPosition, commitsApiUrl, repository);
+            findLastCommentAndUpdateAccountAndRepository2(currentPosition, commitsApiUrl, repository);
+            //findLastCommentAndUpdateAccountAndRepository(currentPosition, commitsApiUrl, repository);
         } else Toast.makeText(this, "Doesn't have commits!", Toast.LENGTH_SHORT).show();
     }
 
 
 
-    private void findLastCommentAndUpdateAccountAndRepository (final int currentPosition, String commitsApiUrl, final Repository repository) {
+    private void findLastCommentAndUpdateAccountAndRepository2 (final int currentPosition, String commitsApiUrl, final Repository repository) {
+        AsyncTaskCommitsApi asyncTaskCommitsApi = new AsyncTaskCommitsApi(currentPosition, commitsApiUrl, repository);
+        asyncTaskCommitsApi.execute();
+    }
 
-        OkHttpClient okHttpClient = new OkHttpClient();
-        Request.Builder requestBuilder = new Request.Builder();
-        requestBuilder.url(commitsApiUrl);
-        Request request = requestBuilder.build();
-        Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
+    private class AsyncTaskCommitsApi extends AsyncTask<String, Void, String>{
 
-            @Override
-            public void onFailure(Call call, IOException exception) {
+        int currentPosition;
+        String commitsApiUrl;
+        Repository repository;
+
+        public AsyncTaskCommitsApi(int currentPosition, String commitsApiUrl, Repository repository) {
+            this.currentPosition = currentPosition;
+            this.commitsApiUrl = commitsApiUrl;
+            this.repository = repository;
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            OkHttpClient okHttpClient = new OkHttpClient();
+            Request.Builder requestBuilder = new Request.Builder();
+            requestBuilder.url(commitsApiUrl);
+            Request request = requestBuilder.build();
+            Call call = okHttpClient.newCall(request);
+            Response response = null;
+            String stringResponseBody = "";
+
+            try {
+                response = call.execute();
+                ResponseBody responseBody = response.body();
+                stringResponseBody = responseBody != null ? responseBody.string() : null;
+                Log.d("AT_commits_api", stringResponseBody);
+            } catch (IOException exception) {
+                Log.d("AT_commits_api", exception.getMessage());
+                exception.printStackTrace();
+            }
+            return stringResponseBody;
+        }
+
+        @Override
+        protected void onPostExecute(String stringResponseBody) {
+            super.onPostExecute(stringResponseBody);
+
+            // define var
+            String commitshaID;
+            String authorEmail; // to update Account
+            String commitDate;
+            String commitMessage;
+            String commitHtmlUrl;
+            String commitApiUrl;
+
+            try {
+
+                JSONArray jsonArrayAllCommits = new JSONArray(stringResponseBody);
+
+                JSONObject jsonObjectCommit;
+                JSONObject jsonObjectCommitInfo;
+                JSONObject jsonObjectAuthor;
+
+                SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+                JSONObject jsonObjectEarliestCommit = jsonArrayAllCommits.getJSONObject(0);
+                long earliestDate = 0;
+
+                for (int i = 0; i< jsonArrayAllCommits.length(); i++){
+                    jsonObjectCommit = jsonArrayAllCommits.getJSONObject(i);
+                    jsonObjectCommitInfo = jsonObjectCommit.getJSONObject("commit");
+                    jsonObjectAuthor = jsonObjectCommitInfo.getJSONObject("author");
+                    commitDate = jsonObjectAuthor.getString("date"); // 2018-11-17T05:11:40Z
+
+                    try {
+                        String[] parts1 = commitDate.split("T");
+                        String part1 = parts1[0];
+                        String part2 = parts1[1];
+                        String[] parts2 =  part2.split("Z");
+                        String part3 = parts2[0];
+                        String result = part1 + " " + part3;
+
+                        Date date = formatDate.parse(result); // 2018-11-17T05:11:40Z
+                        String str = formatDate.format(date);
+                        if(date.getTime() > earliestDate){
+                            earliestDate = date.getTime();
+                            jsonObjectEarliestCommit = jsonObjectCommit;
+                        }
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                jsonObjectCommitInfo = jsonObjectEarliestCommit.getJSONObject("commit");
+                jsonObjectAuthor = jsonObjectCommitInfo.getJSONObject("author");
+                commitDate = jsonObjectAuthor.getString("date");
+                commitshaID = jsonObjectEarliestCommit.getString("sha");
+
+                authorEmail = jsonObjectAuthor.getString("email");
+
+                commitMessage = jsonObjectCommitInfo.getString("message");
+
+                commitHtmlUrl = jsonObjectEarliestCommit.getString("html_url");
+                commitApiUrl = jsonObjectEarliestCommit.getString("url");
+
+                // update the email of Account
+                repository.getAuthor().setEmail(authorEmail);
+
+                // update the last commit
+                Commit lastCommit = repository.getLastCommit();
+                lastCommit.setShaID(commitshaID);
+                lastCommit.setCommitter(repository.getAuthor());
+                lastCommit.setDate(commitDate);
+                lastCommit.setMessage(commitMessage);
+                lastCommit.setHtmlUrl(commitHtmlUrl);
+                lastCommit.setApiUrl(commitApiUrl);
+
+                adapterRV.notifyDataSetChanged();
+                recyclerView.getAdapter().notifyItemChanged(currentPosition);
+
+            } catch (JSONException exception){
+
                 Log.d("AT_commits", exception.getMessage());
                 exception.printStackTrace();
             }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                ResponseBody responseBody = response.body();
-                String stringResponseBody = responseBody.string();
-                Log.d("AT_commits", stringResponseBody);
-
-                // define var
-                String commitshaID;
-                String authorEmail; // to update Account
-                String commitDate;
-                String commitMessage;
-                String commitHtmlUrl;
-                String commitApiUrl;
-
-                try {
-
-                    JSONObject jsonObject = new JSONObject(stringResponseBody);
-
-                    commitshaID = jsonObject.getString("sha");
-
-                    JSONObject jsonObjectCommit = jsonObject.getJSONObject("commit");
-                    JSONObject jsonObjectAuthor = jsonObjectCommit.getJSONObject("author");
-
-                    authorEmail = jsonObjectAuthor.getString("email");
-                    commitDate = jsonObjectAuthor.getString("date");
-
-                    commitMessage = jsonObjectCommit.getString("message");
-
-                    commitHtmlUrl = jsonObject.getString("html_url");
-                    commitApiUrl = jsonObject.getString("url");
-
-                    // update the email of Account
-                    repository.getAuthor().setEmail(authorEmail);
-
-                    // update the last commit
-                    Commit lastCommit = repository.getLastCommit();
-                    lastCommit.setShaID(commitshaID);
-                    lastCommit.setCommitter(repository.getAuthor());
-                    lastCommit.setDate(commitDate);
-                    lastCommit.setMessage(commitMessage);
-                    lastCommit.setHtmlUrl(commitHtmlUrl);
-                    lastCommit.setApiUrl(commitApiUrl);
-
-                    adapterRV.notifyDataSetChanged();
-                    recyclerView.getAdapter().notifyItemChanged(currentPosition);
-
-                } catch (JSONException exception){
-
-                    Log.d("AT_commits", exception.getMessage());
-                    exception.printStackTrace();
-                }
-
-                // update the UI on the RecyclerView
-                Handler handler = new Handler(Looper.getMainLooper());
-
-                Runnable runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        if (recyclerView.getAdapter() != null){
-                            //adapterRV.notifyDataSetChanged();
-                            recyclerView.getAdapter().notifyItemChanged(currentPosition);
-                        }
-                    }
-                };
-
-                handler.post(runnable);
-            }
-        });
-
+            recyclerView.getAdapter().notifyItemChanged(currentPosition);
+        }
 
     }
 
@@ -308,7 +346,6 @@ public class RepositoriesActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getApplicationContext());
         recyclerView.setLayoutManager(linearLayoutManager);
     }
-
 
     private void setAdapter(){
         adapterRV = new AdapterRV(arrayListRepositories);

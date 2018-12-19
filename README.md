@@ -17,7 +17,7 @@ Display combination of 2 API Calls
 
 Filling RecyclerView with data from 2 API calls for last commit and a all repositories of an account
 
-![screenshot_1545217194](https://user-images.githubusercontent.com/20923486/50216439-0cfe3c80-0386-11e9-8fc8-3ea2057611e8.png)
+![6cd4733b-a11c-496a-aa57-0d95257cedcd](https://user-images.githubusercontent.com/20923486/50219897-ea255580-0390-11e9-8370-cf0b58285421.jpg)
 
 
 ------------- Technologies I used -------------

@@ -122,7 +122,7 @@ public class RepositoriesActivity extends AppCompatActivity {
 
             try {
 
-                JSONArray jsonArray = new JSONArray(stringResponseBody);
+                JSONArray jsonArrayRepositories = new JSONArray(stringResponseBody);
                 JSONObject jsonObject;
                 String repositoryId;
                 String repositoryName;
@@ -145,19 +145,8 @@ public class RepositoriesActivity extends AppCompatActivity {
                         new ArrayList<Repository>() // to be completed later after last commit call
                 );
 
-                Commit lastCommit = new Commit(
-                        "",
-                        ownerAccount,
-                        "",
-                        "",
-                        "",
-                        ""
-                );
-
-                Repository newRepository;
-
-                for (int i = 0; i< jsonArray.length(); i++){
-                    jsonObject = jsonArray.getJSONObject(i);
+                for (int i = 0; i< jsonArrayRepositories.length(); i++){
+                    jsonObject = jsonArrayRepositories.getJSONObject(i);
 
                     repositoryId = String.valueOf(jsonObject.getLong("id"));
                     repositoryName = jsonObject.getString("name");
@@ -170,7 +159,16 @@ public class RepositoriesActivity extends AppCompatActivity {
                     //commitsApiUrl = jsonObject.getString("commits_url");
                     repositoryProgrammingLanguage = jsonObject.getString("language");
 
-                    newRepository = new Repository(
+                    Commit lastCommit = new Commit(
+                            "",
+                            ownerAccount,
+                            "",
+                            "",
+                            "",
+                            ""
+                    );
+
+                    Repository newRepository = new Repository(
                             repositoryId,
                             repositoryName,
                             repositoryCreatedAt,
@@ -205,7 +203,6 @@ public class RepositoriesActivity extends AppCompatActivity {
         if (commitsApiUrl != null && !commitsApiUrl.isEmpty()){
 
             findLastCommentAndUpdateAccountAndRepository2(currentPosition, commitsApiUrl, repository);
-            //findLastCommentAndUpdateAccountAndRepository(currentPosition, commitsApiUrl, repository);
         } else Toast.makeText(this, "Doesn't have commits!", Toast.LENGTH_SHORT).show();
     }
 

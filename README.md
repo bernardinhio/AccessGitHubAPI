@@ -20,6 +20,23 @@ Filling RecyclerView with data from 2 API calls for last commit and a all reposi
 ![screenshot_1545217194](https://user-images.githubusercontent.com/20923486/50216439-0cfe3c80-0386-11e9-8fc8-3ea2057611e8.png)
 
 
+------------- Technologies I used -------------
+
+- OkHttp
+- AsyncTask
+- RecyclerView / holder / adapter
+- Material design
+- SQLite (not yet done)
+
+
+------------- future work -------------
+
+- collapsing / expanding fragments at the recycler view for more details (or other ui concept)
+- Refactoring reusing code for AsyncTask
+- Showing circular progress bar at the RecyclerView each fragment "refreshing"
+- changing architecture to use SLite and Parcelable to avoid loading data but using local one 
+
+
 ------------- GitHub API calls -------------
 
 To get account info

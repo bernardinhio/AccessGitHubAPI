@@ -72,8 +72,8 @@ public class MainActivity extends AppCompatActivity {
 
             String accountApiUrl = generateAccountApiUrlFromAccountJtmlUrl(accountHtmlUrl);
 
-            AsyncTaskAccountProfile asyncTaskAccountProfile = new AsyncTaskAccountProfile(accountApiUrl);
-            asyncTaskAccountProfile.execute();
+            AsyncTaskAccountApi asyncTaskAccountApi = new AsyncTaskAccountApi(accountApiUrl);
+            asyncTaskAccountApi.execute();
 
         } else Toast.makeText(this, "Empty url", Toast.LENGTH_SHORT).show();
     }
@@ -93,11 +93,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class AsyncTaskAccountProfile extends AsyncTask<String, Void, String>{
+    private class AsyncTaskAccountApi extends AsyncTask<String, Void, String>{
 
         String accountApiUrl = "";
         // constructor
-        AsyncTaskAccountProfile(String accountApiUrl) {
+        AsyncTaskAccountApi(String accountApiUrl) {
             this.accountApiUrl = accountApiUrl;
         }
 
@@ -124,9 +124,9 @@ public class MainActivity extends AppCompatActivity {
                 response = call.execute();
                 ResponseBody responseBody = response.body();
                 stringResponseBody = responseBody != null ? responseBody.string() : null;
-                Log.d("AT_profile_info", stringResponseBody);
+                Log.d("AT_account_api", stringResponseBody);
             } catch (IOException exception) {
-                Log.d("AT_profile_info", exception.getMessage());
+                Log.d("AT_account_api", exception.getMessage());
                 exception.printStackTrace();
             }
             return stringResponseBody;
@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String stringResponseBody) {
             super.onPostExecute(stringResponseBody);
-            Log.d("AT_profile_info", stringResponseBody);
+            Log.d("AT_account_api", stringResponseBody);
 
             try {
                 JSONObject jsonObject1 = new JSONObject(stringResponseBody);
@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                 callAvatarApiUrl(avatarUrl);
 
             } catch (JSONException exception){
-                Log.d("JSONException", exception.getMessage());
+                Log.d("AT_account_api", exception.getMessage());
                 exception.printStackTrace();
             }
         }
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call call, IOException exception) {
-                Log.d("AT_avatar_img", exception.getMessage());
+                Log.d("AT_avatar_api", exception.getMessage());
                 exception.printStackTrace();
             }
 

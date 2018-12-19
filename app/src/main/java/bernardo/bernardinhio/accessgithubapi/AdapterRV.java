@@ -7,19 +7,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import bernardo.bernardinhio.accessgithubapi.model.Repository;
+
 public class AdapterRV extends RecyclerView.Adapter <AdapterRV.ViewHolderRV>{
 
-    private ArrayList<String> textArrayList;
+    private ArrayList<Repository> arrayListRepositories;
 
-    AdapterRV(ArrayList<String> textArrayList) {
-        this.textArrayList = textArrayList;
-    }
-
-    private ArrayList<String> getTextArrayList() {
-        return this.textArrayList;
+    AdapterRV(ArrayList<Repository> arrayListRepositories) {
+        this.arrayListRepositories = arrayListRepositories;
     }
 
     @Override
@@ -27,23 +26,44 @@ public class AdapterRV extends RecyclerView.Adapter <AdapterRV.ViewHolderRV>{
 
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
 
-        View viewInflated = layoutInflater.inflate(R.layout.fragment_text, parent, false);
+        View viewInflated = layoutInflater.inflate(R.layout.fragment_repository_details, parent, false);
 
         return new ViewHolderRV(viewInflated);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolderRV holder, int position) {
-        holder.getTvRepositoryName().setText(this.getTextArrayList().get(position));
+    public void onBindViewHolder(final ViewHolderRV holder, int position) {
+
+        Repository repository = arrayListRepositories.get(position);
+
+        holder.tvRepositoryName.setText(repository.getName());
+        holder.tvHtmlUrl.setText(repository.getHtmlUrl());
+        holder.tvProgramingLanguage.setText(repository.getProgramingLanguage());
+        holder.tvCreatedAt.setText("Created:" + repository.getCreatedAt().substring(0,10));
+        holder.tvUpdatedAt.setText("Updated:" + repository.getUpdatedAt().substring(0,10));
+        holder.tvDateCommit.setText("Committed: " + repository.getUpdatedAt().substring(0,10));
+        holder.tvUsernameCommitter.setText(repository.getAuthor().getUsername());
+        holder.tvEmailCommitter.setText("By:" + repository.getAuthor().getEmail());
+        holder.tvMessageCommit.setText(repository.getLastCommit().getMessage());
+        holder.tvCommitUrl.setText(repository.getLastCommit().getHtmlUrl());
+
+        holder.btnShowLastCommit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Toast.makeText(holder.btnShowLastCommit.getContext(), "clicked", Toast.LENGTH_SHORT).show();
+                //holder.containerLastCommit.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return this.getTextArrayList().size();
+        return arrayListRepositories.size();
     }
 
 
     class ViewHolderRV extends RecyclerView.ViewHolder{
+
         private ProgressBar progressBar;
         private TextView tvRepositoryName;
         private TextView tvHtmlUrl;
@@ -56,6 +76,7 @@ public class AdapterRV extends RecyclerView.Adapter <AdapterRV.ViewHolderRV>{
         private TextView tvUsernameCommitter;
         private TextView tvEmailCommitter;
         private TextView tvMessageCommit;
+        private TextView tvCommitUrl;
 
         ViewHolderRV(View itemView) {
             super(itemView);
@@ -71,10 +92,7 @@ public class AdapterRV extends RecyclerView.Adapter <AdapterRV.ViewHolderRV>{
             this.tvUsernameCommitter = (TextView) itemView.findViewById(R.id.username_committer);
             this.tvEmailCommitter = (TextView) itemView.findViewById(R.id.email_committer);
             this.tvMessageCommit = (TextView) itemView.findViewById(R.id.message_commit);
-        }
-
-        TextView getTvRepositoryName() {
-            return this.tvRepositoryName;
+            this.tvCommitUrl = (TextView) itemView.findViewById(R.id.commit_url);
         }
     }
 }

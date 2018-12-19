@@ -1,12 +1,12 @@
 package bernardo.bernardinhio.accessgithubapi.model
 
 class Commit(
-        val shaID : String ="",
-        val committer : Account = Account(),
-        val date : String = "",
-        val message : String = "",
-        val apiUrl : String = "", // ends with shaID
-        val htmlUrl : String = "" // ends with shaID
+        var shaID : String ="",
+        var committer : Account = Account(),
+        var date : String = "",
+        var message : String = "",
+        var htmlUrl : String = "", // ends with shaID,
+        var apiUrl : String = "" // ends with shaID
 
 ){
 

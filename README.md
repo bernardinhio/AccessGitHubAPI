@@ -2,11 +2,11 @@
 
 The aim is to build an App that connects to the Github API, shows the public repositories of a particular user and then retrieves their respective last commits. The SDK targeted is 19.
 
-Home to input url
+Home to input a github account url
 
-![screenshot_1545217137](https://user-images.githubusercontent.com/20923486/50216288-a0833d80-0385-11e9-9d26-a3964fceca82.png)
+![screenshot_1545286695](https://user-images.githubusercontent.com/20923486/50267425-813cec80-0427-11e9-8591-b910c9da6737.png)
 
-Calling the API for account and Avatar image
+Calling the API for account and the API Avatar image, the image should load first then the call to account info occures
 
 ![screenshot_1545217164](https://user-images.githubusercontent.com/20923486/50216346-d1637280-0385-11e9-9788-79f16bb77258.png)
 
@@ -15,9 +15,13 @@ Display combination of 2 API Calls
 ![screenshot_1545217182](https://user-images.githubusercontent.com/20923486/50216384-e8a26000-0385-11e9-9191-6526b25f443e.png)
 
 
-Filling RecyclerView with data from 2 API calls for last commit and a all repositories of an account
+Filling RecyclerView using its adapter by a first call to repositories of the account, then on the individual level of each Item call the API ffor the list of commits, and process the commits to find the most early one then show data on the UI
 
-![6cd4733b-a11c-496a-aa57-0d95257cedcd](https://user-images.githubusercontent.com/20923486/50219897-ea255580-0390-11e9-8370-cf0b58285421.jpg)
+First API call 
+![screenshot_1545286964](https://user-images.githubusercontent.com/20923486/50267597-1344f500-0428-11e9-980b-06ca0d7c0666.png)
+
+Second API call
+![screenshot_1545287065](https://user-images.githubusercontent.com/20923486/50267668-50a98280-0428-11e9-91aa-458ac331a9b2.png)
 
 
 ------------- Technologies I used -------------
@@ -29,7 +33,7 @@ Filling RecyclerView with data from 2 API calls for last commit and a all reposi
 - SQLite (not yet done)
 
 
-------------- future work -------------
+------------- Future work -------------
 
 - collapsing / expanding fragments at the recycler view for more details (or other ui concept)
 - Refactoring reusing code for AsyncTask

@@ -223,5 +223,4 @@ public class MainActivity extends AppCompatActivity {
 
         this.startActivities(new Intent[]{intent});
     }
-
 }

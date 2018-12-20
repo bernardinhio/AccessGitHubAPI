@@ -5,7 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -26,9 +25,7 @@ public class AdapterRV extends RecyclerView.Adapter <AdapterRV.ViewHolderRV>{
     public ViewHolderRV onCreateViewHolder(ViewGroup parent, int viewType) {
 
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-
         View viewInflated = layoutInflater.inflate(R.layout.fragment_repository_details, parent, false);
-
         return new ViewHolderRV(viewInflated);
     }
 
@@ -57,7 +54,6 @@ public class AdapterRV extends RecyclerView.Adapter <AdapterRV.ViewHolderRV>{
     public int getItemCount() {
         return arrayListRepositories.size();
     }
-
 
     class ViewHolderRV extends RecyclerView.ViewHolder{
 

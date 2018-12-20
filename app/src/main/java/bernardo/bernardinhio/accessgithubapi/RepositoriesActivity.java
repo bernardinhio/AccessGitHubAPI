@@ -3,7 +3,6 @@ package bernardo.bernardinhio.accessgithubapi;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -59,7 +58,6 @@ public class RepositoriesActivity extends AppCompatActivity {
         }
     }
 
-
     private void getIntentAndSetOwnerFields(){
         Intent intent = this.getIntent();
         if (intent != null){
@@ -74,7 +72,6 @@ public class RepositoriesActivity extends AppCompatActivity {
             this.setTitle(ownerUsername + "'s repos");
         }
     }
-
 
     private void setOwnerAccount(){
         ownerAccount = new Account(
@@ -173,9 +170,6 @@ public class RepositoriesActivity extends AppCompatActivity {
                     );
 
                     arrayListRepositories.add(newRepository);
-
-                    // send the ownerAccount and lastCommit to be modified after the last commit is found
-                    //findLastCommit(i, commitsApiUrl, newRepository);
                 }
 
                 // now the list of repositories is completed, then update the account
@@ -258,7 +252,7 @@ public class RepositoriesActivity extends AppCompatActivity {
             // define var
             String commitShaID;
             String committerName;
-            String committerEmail; // to update Account
+            String committerEmail;
             String commitDate;
             String commitMessage;
             String commitHtmlUrl;
@@ -327,7 +321,6 @@ public class RepositoriesActivity extends AppCompatActivity {
                 lastCommit.setHtmlUrl(commitHtmlUrl);
                 lastCommit.setApiUrl(commitApiUrl);
 
-                adapterRV.notifyDataSetChanged();
                 recyclerView.getAdapter().notifyItemChanged(currentPosition);
 
             } catch (JSONException exception){
@@ -338,7 +331,6 @@ public class RepositoriesActivity extends AppCompatActivity {
 
             recyclerView.getAdapter().notifyItemChanged(currentPosition);
         }
-
     }
 
     private void setupRecyclerView(){

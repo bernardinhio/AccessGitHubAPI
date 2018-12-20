@@ -175,7 +175,7 @@ public class RepositoriesActivity extends AppCompatActivity {
                     arrayListRepositories.add(newRepository);
 
                     // send the ownerAccount and lastCommit to be modified after the last commit is found
-                    findLastCommit(i, commitsApiUrl, newRepository);
+                    //findLastCommit(i, commitsApiUrl, newRepository);
                 }
 
                 // now the list of repositories is completed, then update the account
@@ -191,22 +191,24 @@ public class RepositoriesActivity extends AppCompatActivity {
         }
     }
 
-    private void findLastCommit(final int currentPosition, final String commitsApiUrl, final Repository repository) {
-        if (commitsApiUrl != null && !commitsApiUrl.isEmpty()){
-
-             callCommitsApiAndFindLastCommit(currentPosition, commitsApiUrl, repository);
-        } else Toast.makeText(this, "Doesn't have commits!", Toast.LENGTH_SHORT).show();
-    }
-
-
     public void showLastCommitInfo(View view) {
         RecyclerView.ViewHolder viewHolder = recyclerView.findContainingViewHolder(view);
         if (viewHolder != null){
             int currentPostion = viewHolder.getAdapterPosition();
 
-            recyclerView.getAdapter().notifyItemChanged(currentPostion);
-            Toast.makeText(this, "PRESSED", Toast.LENGTH_SHORT).show();
+            String commitsApiUrl = arrayListRepositories.get(currentPostion).getCommitsApiUrl();
+
+            if (!commitsApiUrl.isEmpty()){
+                findLastCommit(currentPostion, commitsApiUrl, arrayListRepositories.get(currentPostion));
+            }
         }
+    }
+
+    private void findLastCommit(final int currentPosition, final String commitsApiUrl, final Repository repository) {
+        if (commitsApiUrl != null && !commitsApiUrl.isEmpty()){
+
+             callCommitsApiAndFindLastCommit(currentPosition, commitsApiUrl, repository);
+        } else Toast.makeText(this, "Doesn't have commits!", Toast.LENGTH_SHORT).show();
     }
 
     private void callCommitsApiAndFindLastCommit(final int currentPosition, String commitsApiUrl, final Repository repository) {

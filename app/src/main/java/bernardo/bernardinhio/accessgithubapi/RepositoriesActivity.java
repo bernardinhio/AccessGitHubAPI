@@ -3,12 +3,12 @@ package bernardo.bernardinhio.accessgithubapi;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -25,7 +25,6 @@ import bernardo.bernardinhio.accessgithubapi.model.Account;
 import bernardo.bernardinhio.accessgithubapi.model.Commit;
 import bernardo.bernardinhio.accessgithubapi.model.Repository;
 import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -33,13 +32,14 @@ import okhttp3.ResponseBody;
 
 public class RepositoriesActivity extends AppCompatActivity {
 
-    private String userId;
-    private String username;
-    private String createdAt;
-    private String htmlUrl;
-    private String apiUrl;
-    private String avatarUrl;
-    private String repositoriesApiUrl;
+    private Account ownerAccount;
+    private String ownerId;
+    private String ownerUsername;
+    private String ownerCreatedAt;
+    private String ownerHtmlUrl;
+    private String ownerApiUrl;
+    private String ownerAvatarUrl;
+    private String ownerRepositoriesApiUrl;
 
     static AdapterRV adapterRV;
     private static RecyclerView recyclerView;
@@ -51,32 +51,44 @@ public class RepositoriesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_repositories);
 
-        getIntentValues();
+        getIntentAndSetOwnerFields();
+        setOwnerAccount();
 
-        if (repositoriesApiUrl != null && !repositoriesApiUrl.isEmpty()){
-            startAsyncTaskReposApi(repositoriesApiUrl);
+        if (ownerRepositoriesApiUrl != null && !ownerRepositoriesApiUrl.isEmpty()){
+            startAsyncTaskReposApi(ownerRepositoriesApiUrl);
         }
-
-        setupRecyclerView();
-        setAdapter();
     }
 
 
-    private void getIntentValues(){
+    private void getIntentAndSetOwnerFields(){
         Intent intent = this.getIntent();
         if (intent != null){
-            userId = intent.getStringExtra("userId");
-            username = intent.getStringExtra("username");
-            createdAt = intent.getStringExtra("createdAt");
-            htmlUrl = intent.getStringExtra("htmlUrl");
-            apiUrl = intent.getStringExtra("apiUrl");
-            avatarUrl = intent.getStringExtra("avatarUrl");
-            repositoriesApiUrl = intent.getStringExtra("repositoriesApiUrl");
+            ownerId = intent.getStringExtra("ownerId");
+            ownerUsername = intent.getStringExtra("ownerUsername");
+            ownerCreatedAt = intent.getStringExtra("ownerCreatedAt");
+            ownerHtmlUrl = intent.getStringExtra("ownerHtmlUrl");
+            ownerApiUrl = intent.getStringExtra("ownerApiUrl");
+            ownerAvatarUrl = intent.getStringExtra("ownerAvatarUrl");
+            ownerRepositoriesApiUrl = intent.getStringExtra("ownerRepositoriesApiUrl");
 
-            this.setTitle(username + "'s repos");
+            this.setTitle(ownerUsername + "'s repos");
         }
     }
 
+
+    private void setOwnerAccount(){
+        ownerAccount = new Account(
+                ownerId,
+                ownerUsername,
+                ownerCreatedAt,
+                ownerHtmlUrl,
+                ownerApiUrl,
+                ownerAvatarUrl,
+                ownerRepositoriesApiUrl,
+                "",
+                new ArrayList<Repository>() // to be completed later after last commit call
+        );
+    }
 
     private void startAsyncTaskReposApi(String repositoriesApiUrl) {
         AsyncTaskReposApi asyncTaskReposApi = new AsyncTaskReposApi(repositoriesApiUrl);
@@ -124,6 +136,7 @@ public class RepositoriesActivity extends AppCompatActivity {
 
                 JSONArray jsonArrayRepositories = new JSONArray(stringResponseBody);
                 JSONObject jsonObject;
+
                 String repositoryId;
                 String repositoryName;
                 String repositoryCreatedAt;
@@ -132,18 +145,6 @@ public class RepositoriesActivity extends AppCompatActivity {
                 String repositoryApiUrl;
                 String commitsApiUrl = "";
                 String repositoryProgrammingLanguage;
-
-                Account ownerAccount = new Account(
-                        userId,
-                        username,
-                        createdAt,
-                        htmlUrl,
-                        apiUrl,
-                        avatarUrl,
-                        repositoriesApiUrl,
-                        "", // to be completed later after last commit call
-                        new ArrayList<Repository>() // to be completed later after last commit call
-                );
 
                 for (int i = 0; i< jsonArrayRepositories.length(); i++){
                     jsonObject = jsonArrayRepositories.getJSONObject(i);
@@ -154,19 +155,9 @@ public class RepositoriesActivity extends AppCompatActivity {
                     repositoryUpdatedAt = jsonObject.getString("updated_at");
                     repositoryHtmlUrl = jsonObject.getString("html_url");
                     repositoryApiUrl = jsonObject.getString("url");
-                    commitsApiUrl = "https://api.github.com/repos/" + username + "/" + repositoryName + "/commits";
-                    // https://api.github.com/repos/bernardinhio/ScorePinsGame/commits
-                    //commitsApiUrl = jsonObject.getString("commits_url");
+                    commitsApiUrl = "https://api.github.com/repos/" + ownerUsername + "/" + repositoryName + "/commits";
+                    // ex: https://api.github.com/repos/bernardinhio/ScorePinsGame/commits
                     repositoryProgrammingLanguage = jsonObject.getString("language");
-
-                    Commit lastCommit = new Commit(
-                            "",
-                            ownerAccount,
-                            "",
-                            "",
-                            "",
-                            ""
-                    );
 
                     Repository newRepository = new Repository(
                             repositoryId,
@@ -178,13 +169,13 @@ public class RepositoriesActivity extends AppCompatActivity {
                             commitsApiUrl,
                             repositoryProgrammingLanguage,
                             ownerAccount,
-                            lastCommit
+                            new Commit()
                     );
 
                     arrayListRepositories.add(newRepository);
 
                     // send the ownerAccount and lastCommit to be modified after the last commit is found
-                    setLastCommit(i, commitsApiUrl, newRepository);
+                    findLastCommit(i, commitsApiUrl, newRepository);
                 }
 
                 // now the list of repositories is completed, then update the account
@@ -195,20 +186,30 @@ public class RepositoriesActivity extends AppCompatActivity {
                 exception.printStackTrace();
             }
 
-            adapterRV.notifyDataSetChanged();
+            setupRecyclerView();
+            setAdapter();
         }
     }
 
-    private void setLastCommit(final int currentPosition, final String commitsApiUrl, final Repository repository) {
+    private void findLastCommit(final int currentPosition, final String commitsApiUrl, final Repository repository) {
         if (commitsApiUrl != null && !commitsApiUrl.isEmpty()){
 
-            findLastCommentAndUpdateAccountAndRepository2(currentPosition, commitsApiUrl, repository);
+             callCommitsApiAndFindLastCommit(currentPosition, commitsApiUrl, repository);
         } else Toast.makeText(this, "Doesn't have commits!", Toast.LENGTH_SHORT).show();
     }
 
 
+    public void showLastCommitInfo(View view) {
+        RecyclerView.ViewHolder viewHolder = recyclerView.findContainingViewHolder(view);
+        if (viewHolder != null){
+            int currentPostion = viewHolder.getAdapterPosition();
 
-    private void findLastCommentAndUpdateAccountAndRepository2 (final int currentPosition, String commitsApiUrl, final Repository repository) {
+            recyclerView.getAdapter().notifyItemChanged(currentPostion);
+            Toast.makeText(this, "PRESSED", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void callCommitsApiAndFindLastCommit(final int currentPosition, String commitsApiUrl, final Repository repository) {
         AsyncTaskCommitsApi asyncTaskCommitsApi = new AsyncTaskCommitsApi(currentPosition, commitsApiUrl, repository);
         asyncTaskCommitsApi.execute();
     }
@@ -253,8 +254,9 @@ public class RepositoriesActivity extends AppCompatActivity {
             super.onPostExecute(stringResponseBody);
 
             // define var
-            String commitshaID;
-            String authorEmail; // to update Account
+            String commitShaID;
+            String committerName;
+            String committerEmail; // to update Account
             String commitDate;
             String commitMessage;
             String commitHtmlUrl;
@@ -266,18 +268,18 @@ public class RepositoriesActivity extends AppCompatActivity {
 
                 JSONObject jsonObjectCommit;
                 JSONObject jsonObjectCommitInfo;
-                JSONObject jsonObjectAuthor;
+                JSONObject jsonObjectCommitter;
 
                 SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-                JSONObject jsonObjectEarliestCommit = jsonArrayAllCommits.getJSONObject(0);
-                long earliestDate = 0;
+                JSONObject jsonObjectLastCommit = new JSONObject();
+                long lastCommitDate = 0;
 
                 for (int i = 0; i< jsonArrayAllCommits.length(); i++){
                     jsonObjectCommit = jsonArrayAllCommits.getJSONObject(i);
                     jsonObjectCommitInfo = jsonObjectCommit.getJSONObject("commit");
-                    jsonObjectAuthor = jsonObjectCommitInfo.getJSONObject("author");
-                    commitDate = jsonObjectAuthor.getString("date"); // 2018-11-17T05:11:40Z
+                    jsonObjectCommitter = jsonObjectCommitInfo.getJSONObject("author");
+                    commitDate = jsonObjectCommitter.getString("date"); // 2018-11-17T05:11:40Z
 
                     try {
                         String[] parts1 = commitDate.split("T");
@@ -289,9 +291,9 @@ public class RepositoriesActivity extends AppCompatActivity {
 
                         Date date = formatDate.parse(result); // 2018-11-17T05:11:40Z
                         String str = formatDate.format(date);
-                        if(date.getTime() > earliestDate){
-                            earliestDate = date.getTime();
-                            jsonObjectEarliestCommit = jsonObjectCommit;
+                        if(date.getTime() > lastCommitDate){
+                            lastCommitDate = date.getTime();
+                            jsonObjectLastCommit = jsonObjectCommit;
                         }
 
                     } catch (ParseException e) {
@@ -299,25 +301,25 @@ public class RepositoriesActivity extends AppCompatActivity {
                     }
                 }
 
-                jsonObjectCommitInfo = jsonObjectEarliestCommit.getJSONObject("commit");
-                jsonObjectAuthor = jsonObjectCommitInfo.getJSONObject("author");
-                commitDate = jsonObjectAuthor.getString("date");
-                commitshaID = jsonObjectEarliestCommit.getString("sha");
+                commitShaID = jsonObjectLastCommit.getString("sha");
+                commitHtmlUrl = jsonObjectLastCommit.getString("html_url");
+                commitApiUrl = jsonObjectLastCommit.getString("url");
 
-                authorEmail = jsonObjectAuthor.getString("email");
-
+                jsonObjectCommitInfo = jsonObjectLastCommit.getJSONObject("commit");
                 commitMessage = jsonObjectCommitInfo.getString("message");
 
-                commitHtmlUrl = jsonObjectEarliestCommit.getString("html_url");
-                commitApiUrl = jsonObjectEarliestCommit.getString("url");
+                jsonObjectCommitter = jsonObjectCommitInfo.getJSONObject("author");
+                commitDate = jsonObjectCommitter.getString("date");
+                committerName = jsonObjectCommitter.getString("name");
+                committerEmail = jsonObjectCommitter.getString("email");
 
-                // update the email of Account
-                repository.getAuthor().setEmail(authorEmail);
+                // update the committer account name & email
+                repository.getLastCommit().getCommitter().setUsername(committerName);
+                repository.getLastCommit().getCommitter().setEmail(committerEmail);
 
-                // update the last commit
+                // update the last commit fields
                 Commit lastCommit = repository.getLastCommit();
-                lastCommit.setShaID(commitshaID);
-                lastCommit.setCommitter(repository.getAuthor());
+                lastCommit.setShaID(commitShaID);
                 lastCommit.setDate(commitDate);
                 lastCommit.setMessage(commitMessage);
                 lastCommit.setHtmlUrl(commitHtmlUrl);

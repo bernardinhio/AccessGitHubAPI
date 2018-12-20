@@ -11,7 +11,7 @@ class Repository(
         var apiUrl : String = "",  // ends with name
         var commitsApiUrl : String = "",
         var programingLanguage : String = "",
-        var author : Account = Account(), // to be completed once the last commit is found so the account knows the email
+        var owner : Account = Account(), // to be completed once the last commit is found so the account knows the email
         var lastCommit : Commit = Commit() // to be completed once the last commit is found
 
 ){

@@ -42,13 +42,13 @@ public class MainActivity extends AppCompatActivity {
     private ConstraintLayout containerAccountInfo;
     private Button btnShowAccountRepositories;
 
-    private String userId;
-    private String username;
-    private String createdAt;
-    private String htmlUrl;
-    private String apiUrl;
-    private String avatarUrl;
-    private String repositoriesApiUrl;
+    private String ownerId;
+    private String ownerUsername;
+    private String ownerCreatedAt;
+    private String ownerHtmlUrl;
+    private String ownerApiUrl;
+    private String ownerAvatarUrl;
+    private String ownerRepositoriesApiUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,15 +140,15 @@ public class MainActivity extends AppCompatActivity {
             try {
                 JSONObject jsonObject1 = new JSONObject(stringResponseBody);
 
-                userId = String.valueOf(jsonObject1.getLong("id"));
-                username = jsonObject1.getString("login");
-                createdAt = jsonObject1.getString("created_at");
-                htmlUrl = jsonObject1.getString("html_url");
-                apiUrl = jsonObject1.getString("url");
-                avatarUrl = jsonObject1.getString("avatar_url");
-                repositoriesApiUrl = jsonObject1.getString("repos_url");
+                ownerId = String.valueOf(jsonObject1.getLong("id"));
+                ownerUsername = jsonObject1.getString("login");
+                ownerCreatedAt = jsonObject1.getString("created_at");
+                ownerHtmlUrl = jsonObject1.getString("html_url");
+                ownerApiUrl = jsonObject1.getString("url");
+                ownerAvatarUrl = jsonObject1.getString("avatar_url");
+                ownerRepositoriesApiUrl = jsonObject1.getString("repos_url");
 
-                callAvatarApiUrl(avatarUrl);
+                callAvatarApiUrl(ownerAvatarUrl);
 
             } catch (JSONException exception){
                 Log.d("AT_account_api", exception.getMessage());
@@ -192,13 +192,13 @@ public class MainActivity extends AppCompatActivity {
     private void updateAccountPageUi(Bitmap bitmap){
         // modify the UI when the image is created
         circleImageView.setImageBitmap(bitmap);
-        tvUsername.setText(username);
-        tvCreatedAt.setText("Created: " + createdAt.substring(0,10));
+        tvUsername.setText(ownerUsername);
+        tvCreatedAt.setText("Created: " + ownerCreatedAt.substring(0,10));
         containerAccountInfo.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
         btnShowAccountRepositories.setEnabled(true);
         // set on button repositories click listener
-        setShowRepositoriesOnClickListener(repositoriesApiUrl);
+        setShowRepositoriesOnClickListener(ownerRepositoriesApiUrl);
     }
 
     private void setShowRepositoriesOnClickListener(final String repositoriesApiUrl){
@@ -213,13 +213,13 @@ public class MainActivity extends AppCompatActivity {
     private void startShowRepositoriesActivity(){
 
         Intent intent = new Intent(btnShowAccountRepositories.getContext(), RepositoriesActivity.class);
-        intent.putExtra("userId", userId);
-        intent.putExtra("username", username);
-        intent.putExtra("createdAt", createdAt);
-        intent.putExtra("htmlUrl", htmlUrl);
-        intent.putExtra("apiUrl", apiUrl);
-        intent.putExtra("avatarUrl", avatarUrl);
-        intent.putExtra("repositoriesApiUrl", repositoriesApiUrl);
+        intent.putExtra("ownerId", ownerId);
+        intent.putExtra("ownerUsername", ownerUsername);
+        intent.putExtra("ownerCreatedAt", ownerCreatedAt);
+        intent.putExtra("ownerHtmlUrl", ownerHtmlUrl);
+        intent.putExtra("ownerApiUrl", ownerApiUrl);
+        intent.putExtra("ownerAvatarUrl", ownerAvatarUrl);
+        intent.putExtra("ownerRepositoriesApiUrl", ownerRepositoriesApiUrl);
 
         this.startActivities(new Intent[]{intent});
     }

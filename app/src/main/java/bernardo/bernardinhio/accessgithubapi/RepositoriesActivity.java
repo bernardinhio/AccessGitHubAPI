@@ -188,12 +188,17 @@ public class RepositoriesActivity extends AppCompatActivity {
     public void showLastCommitInfo(View view) {
         RecyclerView.ViewHolder viewHolder = recyclerView.findContainingViewHolder(view);
         if (viewHolder != null){
-            int currentPostion = viewHolder.getAdapterPosition();
+            int currentPosition = viewHolder.getAdapterPosition();
 
-            String commitsApiUrl = arrayListRepositories.get(currentPostion).getCommitsApiUrl();
+            // update ui for commit using adapter values
+            arrayListRepositories.get(currentPosition).getLastCommit().setLastCommitLoading(true);
+            arrayListRepositories.get(currentPosition).getLastCommit().setLastCommitDataAvailable(false);
+            recyclerView.getAdapter().notifyItemChanged(currentPosition);
+            
+            String commitsApiUrl = arrayListRepositories.get(currentPosition).getCommitsApiUrl();
 
             if (!commitsApiUrl.isEmpty()){
-                findLastCommit(currentPostion, commitsApiUrl, arrayListRepositories.get(currentPostion));
+                findLastCommit(currentPosition, commitsApiUrl, arrayListRepositories.get(currentPosition));
             }
         }
     }
@@ -329,6 +334,8 @@ public class RepositoriesActivity extends AppCompatActivity {
                 exception.printStackTrace();
             }
 
+            arrayListRepositories.get(currentPosition).getLastCommit().setLastCommitLoading(false);
+            arrayListRepositories.get(currentPosition).getLastCommit().setLastCommitDataAvailable(true);
             recyclerView.getAdapter().notifyItemChanged(currentPosition);
         }
     }

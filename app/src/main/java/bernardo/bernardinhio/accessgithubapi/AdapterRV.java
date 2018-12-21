@@ -40,9 +40,17 @@ public class AdapterRV extends RecyclerView.Adapter <AdapterRV.ViewHolderRV>{
         holder.tvRepoUpdatedAt.setText("Updated:" + repository.getUpdatedAt().substring(0,10));
 
         Commit lastCommit = repository.getLastCommit();
-        if (!lastCommit.getMessage().isEmpty()){
+
+        if (lastCommit.isLastCommitLoading()){
+            holder.containerLastCommit.setVisibility(View.VISIBLE);
+            holder.progressBar.setVisibility(View.VISIBLE);
+        }
+
+        if (lastCommit.isLastCommitDataAvailable()){
+            holder.containerLastCommit.setVisibility(View.VISIBLE);
+            holder.progressBar.setVisibility(View.GONE);
+
             setTextLastCommit(holder, lastCommit);
-            showTextLastCommit(holder);
         }
     }
 
@@ -52,14 +60,6 @@ public class AdapterRV extends RecyclerView.Adapter <AdapterRV.ViewHolderRV>{
         holder.tvCommitDate.setText( (lastCommit.getDate().isEmpty()) ? "Committed: " : "Committed: " + lastCommit.getDate().substring(0,10) );
         holder.tvCommitMessage.setText(lastCommit.getMessage());
         holder.tvCommitUrl.setText(lastCommit.getHtmlUrl());
-    }
-
-    private void showTextLastCommit(ViewHolderRV holder){
-        holder.tvCommitterUsername.setVisibility(View.VISIBLE);
-        holder.tvCommitterEmail.setVisibility(View.VISIBLE);
-        holder.tvCommitDate.setVisibility(View.VISIBLE);
-        holder.tvCommitMessage.setVisibility(View.VISIBLE);
-        holder.tvCommitUrl.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -86,14 +86,14 @@ public class AdapterRV extends RecyclerView.Adapter <AdapterRV.ViewHolderRV>{
         ViewHolderRV(View itemView) {
             super(itemView);
 
-            this.progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar_account_page);
+            this.progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar_fragment_details);
             this.tvRepoName = (TextView) itemView.findViewById(R.id.repo_name);
             this.tvRepoHtmlUrl = (TextView) itemView.findViewById(R.id.html_url);
             this.tvRepoProgramingLanguage = (TextView) itemView.findViewById(R.id.programing_language);
             this.tvRepoCreatedAt = (TextView) itemView.findViewById(R.id.created_at);
             this.tvShowLastCommit = (TextView) itemView.findViewById(R.id.tv_show_last_commit);
             this.tvRepoUpdatedAt = (TextView) itemView.findViewById(R.id.updated_at);
-            this.containerLastCommit = (ConstraintLayout) itemView.findViewById(R.id.container_account_info);
+            this.containerLastCommit = (ConstraintLayout) itemView.findViewById(R.id.container_last_commit);
             this.tvCommitDate = (TextView) itemView.findViewById(R.id.date_commit);
             this.tvCommitterUsername = (TextView) itemView.findViewById(R.id.username_committer);
             this.tvCommitterEmail = (TextView) itemView.findViewById(R.id.email_committer);

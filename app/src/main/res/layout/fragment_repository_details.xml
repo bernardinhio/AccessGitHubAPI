@@ -9,18 +9,6 @@
     android:padding="10sp"
     android:layout_margin="5sp"
     android:background="@drawable/rectangle_yellow_transparent">
-    <ProgressBar
-        android:id="@+id/progress_bar_fragment_details"
-        style="@android:style/Widget.ProgressBar.Large"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:progress="25"
-        android:layout_marginTop="20sp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:visibility="gone" />
     <TextView
         android:id="@+id/repo_name"
         android:layout_width="0dp"
@@ -101,7 +89,20 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5sp"
         android:background="@drawable/rectangle_light_yellow_inside_border_black"
-        app:layout_constraintTop_toBottomOf="@id/tv_show_last_commit">
+        app:layout_constraintTop_toBottomOf="@id/tv_show_last_commit"
+        android:visibility="gone">
+        <ProgressBar
+            android:id="@+id/progress_bar_fragment_details"
+            style="@android:style/Widget.ProgressBar.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:progress="25"
+            android:layout_marginTop="20sp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:visibility="gone" />
         <TextView
             android:id="@+id/username_committer"
             android:layout_width="wrap_content"
@@ -110,8 +111,7 @@
             android:textColor="#000000"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            tools:text="username_committer"
-            android:visibility="gone"/>
+            tools:text="username_committer" />
         <TextView
             android:id="@+id/date_commit"
             android:layout_width="wrap_content"
@@ -124,7 +124,6 @@
             app:layout_constraintTop_toTopOf="@id/username_committer"
             app:layout_constraintBottom_toBottomOf="@id/username_committer"
             app:layout_constraintRight_toRightOf="parent"
-            android:visibility="gone"
             tools:text="date_commit"/>
         <TextView
             android:id="@+id/email_committer"
@@ -135,7 +134,6 @@
             android:fontFamily="sans-serif-condensed"
             android:textStyle="italic"
             app:layout_constraintTop_toBottomOf="@id/username_committer"
-            android:visibility="gone"
             tools:text="email_committer"/>
         <TextView
             android:id="@+id/message_commit"
@@ -147,7 +145,6 @@
             android:layout_marginTop="5sp"
             android:layout_marginBottom="5sp"
             app:layout_constraintTop_toBottomOf="@id/email_committer"
-            android:visibility="gone"
             tools:text="message_commit"/>
         <TextView
             android:id="@+id/commit_url"
@@ -159,7 +156,6 @@
             android:fontFamily="sans-serif-condensed"
             android:textStyle="italic"
             app:layout_constraintTop_toBottomOf="@id/message_commit"
-            android:visibility="gone"
             tools:text="commit_url"/>
     </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>

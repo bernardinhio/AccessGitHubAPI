@@ -6,7 +6,9 @@ class Commit(
         var message : String = "",
         var htmlUrl : String = "", // ends with shaID,
         var apiUrl : String = "", // ends with shaID
-        var committer : Account = Account()
+        var committer : Account = Account(),
+        var isLastCommitLoading : Boolean = false,
+        var isLastCommitDataAvailable : Boolean = false
 ){
 
 }

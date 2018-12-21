@@ -21,11 +21,10 @@ First API call for repositories
 ![screenshot_1545376906](https://user-images.githubusercontent.com/20923486/50329962-9eda8680-04f9-11e9-9c5f-6478533e577f.png)
 
 Second API call to find the last commit while showing progress bar during process
-![screenshot_1545376919](https://user-images.githubusercontent.com/20923486/50329990-c2053600-04f9-11e9-8264-93c9eca08907.png) 
+![screenshot_1545377380](https://user-images.githubusercontent.com/20923486/50330231-b9f9c600-04fa-11e9-9139-431b07111d43.png)
 
 Show data when last commit is found and remove progress bar
-![screenshot_1545376931](https://user-images.githubusercontent.com/20923486/50330002-dcd7aa80-04f9-11e9-978d-42e6491126bb.png)
-
+![screenshot_1545377431](https://user-images.githubusercontent.com/20923486/50330244-c41bc480-04fa-11e9-9b40-46ba896c9121.png) 
 
 ------------- Technologies I used -------------
 
@@ -63,4 +62,3 @@ https://developer.github.com/v3/users/
 ------------- Persistence about only repositories -------------
 
 Using SQLITE, the app first shows the content stored on the phone ()SQLite and then requests Github for new data then update the database and the UI
-

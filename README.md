@@ -24,7 +24,7 @@ Second API call to find the last commit while showing progress bar during proces
 ![screenshot_1545377380](https://user-images.githubusercontent.com/20923486/50330231-b9f9c600-04fa-11e9-9139-431b07111d43.png)
 
 Show data when last commit is found and remove progress bar
-![screenshot_1545377431](https://user-images.githubusercontent.com/20923486/50330244-c41bc480-04fa-11e9-9b40-46ba896c9121.png) 
+![screenshot_1545377671](https://user-images.githubusercontent.com/20923486/50330404-54f2a000-04fb-11e9-9b13-c557d71ed3cc.png)
 
 ------------- Technologies I used -------------
 

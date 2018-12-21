@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    android:id="@+id/item"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -108,7 +110,8 @@
             android:textColor="#000000"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            tools:text="username_committer"/>
+            tools:text="username_committer"
+            android:visibility="gone"/>
         <TextView
             android:id="@+id/date_commit"
             android:layout_width="wrap_content"
@@ -121,6 +124,7 @@
             app:layout_constraintTop_toTopOf="@id/username_committer"
             app:layout_constraintBottom_toBottomOf="@id/username_committer"
             app:layout_constraintRight_toRightOf="parent"
+            android:visibility="gone"
             tools:text="date_commit"/>
         <TextView
             android:id="@+id/email_committer"
@@ -131,6 +135,7 @@
             android:fontFamily="sans-serif-condensed"
             android:textStyle="italic"
             app:layout_constraintTop_toBottomOf="@id/username_committer"
+            android:visibility="gone"
             tools:text="email_committer"/>
         <TextView
             android:id="@+id/message_commit"
@@ -142,6 +147,7 @@
             android:layout_marginTop="5sp"
             android:layout_marginBottom="5sp"
             app:layout_constraintTop_toBottomOf="@id/email_committer"
+            android:visibility="gone"
             tools:text="message_commit"/>
         <TextView
             android:id="@+id/commit_url"
@@ -153,6 +159,7 @@
             android:fontFamily="sans-serif-condensed"
             android:textStyle="italic"
             app:layout_constraintTop_toBottomOf="@id/message_commit"
+            android:visibility="gone"
             tools:text="commit_url"/>
     </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>

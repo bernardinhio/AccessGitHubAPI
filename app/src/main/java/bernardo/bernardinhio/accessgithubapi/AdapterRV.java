@@ -30,7 +30,7 @@ public class AdapterRV extends RecyclerView.Adapter <AdapterRV.ViewHolderRV>{
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolderRV holder, int position) {
+    public void onBindViewHolder(ViewHolderRV holder, int position) {
 
         Repository repository = arrayListRepositories.get(position);
         holder.tvRepoName.setText(repository.getName());
@@ -41,13 +41,25 @@ public class AdapterRV extends RecyclerView.Adapter <AdapterRV.ViewHolderRV>{
 
         Commit lastCommit = repository.getLastCommit();
         if (!lastCommit.getMessage().isEmpty()){
-            holder.tvCommitterUsername.setText("By: " + lastCommit.getCommitter().getUsername());
-            holder.tvCommitterEmail.setText(lastCommit.getCommitter().getEmail());
-            holder.tvCommitDate.setText( (lastCommit.getDate().isEmpty()) ? "Committed: " : "Committed: " + lastCommit.getDate().substring(0,10) );
-            holder.tvCommitMessage.setText(lastCommit.getMessage());
-            holder.tvCommitUrl.setText(lastCommit.getHtmlUrl());
+            setTextLastCommit(holder, lastCommit);
+            showTextLastCommit(holder);
         }
+    }
 
+    private void setTextLastCommit(ViewHolderRV holder, Commit lastCommit){
+        holder.tvCommitterUsername.setText("By: " + lastCommit.getCommitter().getUsername());
+        holder.tvCommitterEmail.setText(lastCommit.getCommitter().getEmail());
+        holder.tvCommitDate.setText( (lastCommit.getDate().isEmpty()) ? "Committed: " : "Committed: " + lastCommit.getDate().substring(0,10) );
+        holder.tvCommitMessage.setText(lastCommit.getMessage());
+        holder.tvCommitUrl.setText(lastCommit.getHtmlUrl());
+    }
+
+    private void showTextLastCommit(ViewHolderRV holder){
+        holder.tvCommitterUsername.setVisibility(View.VISIBLE);
+        holder.tvCommitterEmail.setVisibility(View.VISIBLE);
+        holder.tvCommitDate.setVisibility(View.VISIBLE);
+        holder.tvCommitMessage.setVisibility(View.VISIBLE);
+        holder.tvCommitUrl.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -62,7 +74,7 @@ public class AdapterRV extends RecyclerView.Adapter <AdapterRV.ViewHolderRV>{
         private TextView tvRepoHtmlUrl;
         private TextView tvRepoProgramingLanguage;
         private TextView tvRepoCreatedAt;
-        private TextView btnShowLastCommit;
+        private TextView tvShowLastCommit;
         private TextView tvRepoUpdatedAt;
         private ConstraintLayout containerLastCommit;
         private TextView tvCommitDate;
@@ -73,12 +85,13 @@ public class AdapterRV extends RecyclerView.Adapter <AdapterRV.ViewHolderRV>{
 
         ViewHolderRV(View itemView) {
             super(itemView);
+
             this.progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar_account_page);
             this.tvRepoName = (TextView) itemView.findViewById(R.id.repo_name);
             this.tvRepoHtmlUrl = (TextView) itemView.findViewById(R.id.html_url);
             this.tvRepoProgramingLanguage = (TextView) itemView.findViewById(R.id.programing_language);
             this.tvRepoCreatedAt = (TextView) itemView.findViewById(R.id.created_at);
-            this.btnShowLastCommit = (TextView) itemView.findViewById(R.id.tv_show_last_commit);
+            this.tvShowLastCommit = (TextView) itemView.findViewById(R.id.tv_show_last_commit);
             this.tvRepoUpdatedAt = (TextView) itemView.findViewById(R.id.updated_at);
             this.containerLastCommit = (ConstraintLayout) itemView.findViewById(R.id.container_account_info);
             this.tvCommitDate = (TextView) itemView.findViewById(R.id.date_commit);

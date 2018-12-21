@@ -194,7 +194,7 @@ public class RepositoriesActivity extends AppCompatActivity {
             arrayListRepositories.get(currentPosition).getLastCommit().setLastCommitLoading(true);
             arrayListRepositories.get(currentPosition).getLastCommit().setLastCommitDataAvailable(false);
             recyclerView.getAdapter().notifyItemChanged(currentPosition);
-            
+
             String commitsApiUrl = arrayListRepositories.get(currentPosition).getCommitsApiUrl();
 
             if (!commitsApiUrl.isEmpty()){

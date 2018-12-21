@@ -17,11 +17,14 @@ Display combination of 2 API Calls
 
 Filling RecyclerView using its adapter by a first call to repositories of the account, then on the individual level of each Item call the API ffor the list of commits, and process the commits to find the most early one then show data on the UI
 
-First API call 
-![screenshot_1545286964](https://user-images.githubusercontent.com/20923486/50267597-1344f500-0428-11e9-980b-06ca0d7c0666.png)
+First API call for repositories
+![screenshot_1545376906](https://user-images.githubusercontent.com/20923486/50329962-9eda8680-04f9-11e9-9c5f-6478533e577f.png)
 
-Second API call
-![screenshot_1545287065](https://user-images.githubusercontent.com/20923486/50267668-50a98280-0428-11e9-91aa-458ac331a9b2.png)
+Second API call to find the last commit while showing progress bar during process
+![screenshot_1545376919](https://user-images.githubusercontent.com/20923486/50329990-c2053600-04f9-11e9-8264-93c9eca08907.png) 
+
+Show data when last commit is found and remove progress bar
+![screenshot_1545376931](https://user-images.githubusercontent.com/20923486/50330002-dcd7aa80-04f9-11e9-978d-42e6491126bb.png)
 
 
 ------------- Technologies I used -------------
